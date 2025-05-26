@@ -1,10 +1,8 @@
 # pylint: disable=import-outside-toplevel
 # pylint: disable=line-too-long
 # flake8: noqa
-"""
-Escriba el codigo que ejecute la accion solicitada en cada pregunta.
-"""
-
+import pandas as pd
+import os
 
 def pregunta_01():
     """
@@ -71,3 +69,50 @@ def pregunta_01():
 
 
     """
+
+    # 1. Definir rutas de los conjuntos
+    splits = {
+        "train": "train_dataset.csv",
+        "test":  "test_dataset.csv"
+    }
+
+    # 2. Asegurar existencia de carpeta de salida
+    output_dir = os.path.join("files", "output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    # 3. Para cada partición (train/test), recorrer carpetas y leer archivos
+    for split_name, output_file in splits.items():
+        registros = []
+        base_dir = os.path.join("files", "input", split_name)
+
+        # 3.1. Cada subcarpeta es un sentimiento
+        for sentiment in ["negative", "positive", "neutral"]:
+            sentiment_dir = os.path.join(base_dir, sentiment)
+
+            # 3.2. Leer cada archivo .txt dentro
+            for fname in os.listdir(sentiment_dir):
+                if not fname.lower().endswith(".txt"):
+                    continue
+
+                path_txt = os.path.join(sentiment_dir, fname)
+                with open(path_txt) as f:
+                    text = f.read().strip()
+
+                registros.append({
+                    "phrase": text,
+                    "target": sentiment
+                })
+
+        # 4. Construir DataFrame y escribir CSV
+        df = pd.DataFrame(registros)
+        df.to_csv(os.path.join(output_dir, output_file), index=False)
+        
+    return (
+        pd.read_csv(os.path.join(output_dir, "train_dataset.csv")),
+        pd.read_csv(os.path.join(output_dir, "test_dataset.csv"))
+    )
+    
+# Ejecución de la función para generar los datasets
+resultados = pregunta_01()
+print(resultados[0].head())
+print(resultados[1].head())
