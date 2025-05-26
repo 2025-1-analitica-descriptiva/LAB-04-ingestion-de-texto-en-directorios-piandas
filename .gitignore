@@ -8,7 +8,13 @@ __pycache__/
 # C extensions
 *.so
 
-files/input
+files/input/test/negative/*
+files/input/test/neutral/*
+files/input/test/positive/*
+
+files/input/train/negative/*
+files/input/train/neutral/*
+files/input/train/positive/*
 
 # Distribution / packaging
 .Python
